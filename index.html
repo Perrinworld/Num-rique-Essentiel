@@ -7,7 +7,6 @@
         <title>
             Tâche Eco-Conçues 
         </title>
-
         <h1>Bienvenu, Utilisateur</h1>
         voici un outils de productivité qui vous aide à suivre vos tâches de manière éco-responsables.
         Avec nous, vous pouvez :
@@ -55,28 +54,35 @@
         });
     }
 
-       function addTaskToDOM(text) 
-       {
-            const listItem = document.createElement('li');
-            listItem.innerHTML = `
-            <span class="task-indicator"></span> 
-            <span class="task-text">${text}</span> 
-            <div>
-                <button class="delete-btn">Supprimer</button>
-            </div>`;
+    function addTaskToDOM(text) 
+   {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+        <span class="task-indicator"></span> 
+        <span class="task-text">${text}</span> 
+        <div>
+        <button class="delete-btn">Supprimer</button>
+        </div>`;
             list.appendChild(listItem);
         }
 
-        form.addEventListener('submit', (e) => 
+       form.addEventListener('submit', (e) => 
         {
             e.preventDefault(); 
             const taskText = input.value.trim();
-            
             if (taskText) {
-                addTaskToDOM(taskText);
-                input.value = ''; 
-                input.focus();
-            }
+            // 1. AJOUTER AU DOM
+            addTaskToDOM(taskText);
+                
+                // 2. SAUVEGARDER DANS LE LOCAL STORAGE (CORRECTION)
+                const tasks = getTasks();
+                // On ajoute la nouvelle tâche à la liste avec son état initial (non fait)
+                tasks.push({ text: taskText, completed: false }); 
+                saveTasks(tasks); 
+                
+            input.value = ''; 
+            input.focus();
+        }
         });
         list.addEventListener('click', (e) => 
         {
@@ -95,7 +101,7 @@
             }
             }
         });
-    loadTasks();
+        loadTasks();
         </script>
         <footer>
         <p><small>
