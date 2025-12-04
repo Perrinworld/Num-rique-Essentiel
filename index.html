@@ -21,16 +21,82 @@
 
     <body>
 
-        <label><h2>Mes tâches :</h2>
-            <input type="checkbox" id="tâche1" name="Nom de tâche 1" value = "Faire la tâche 1" placeholder="exemple vide">
-            Faire la base html
-        </label><br>
+        <form id="task-form">
+            <label for="new-task" style="position: absolute; left: -9999px;">Ajouter une nouvelle tâche</label>
+            <input type="text" id="new-task" placeholder="Entrer une nouvelle tâche..." required>
+            <button type="submit">Ajouter</button>
+        </form>
+        <ul id="task-list">
+        </ul>
+        <script>
+            const form = document.getElementById('task-form');
+        const input = document.getElementById('new-task');
+        const list = document.getElementById('task-list'); 
 
-        <label>
-            <input type="checkbox" id="tâche2" name="Nom de tâche 2 " placeholder="exemple vide">
-        </label> Tâche 2
+        function getTasks() {
+        // localStorage.getItem('tasks') retourne la chaîne JSON stockée
+        const tasksJSON = localStorage.getItem('tasks');
+        return tasksJSON ? JSON.parse(tasksJSON) : [];
+    }
 
+    /**
+     * Sauvegarde le tableau de tâches actuel dans le localStorage.
+     */
+    function saveTasks(tasks) {
+        // JSON.stringify() convertit l'objet JavaScript (tableau) en chaîne JSON
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
 
+    function loadTasks() 
+    {
+        const tasks = getTasks();
+        tasks.forEach(task => {
+            addTaskToDOM(task.text, task.completed);
+        });
+    }
+
+       function addTaskToDOM(text) 
+       {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
+            <span class="task-indicator"></span> 
+            <span class="task-text">${text}</span> 
+            <div>
+                <button class="delete-btn">Supprimer</button>
+            </div>`;
+            list.appendChild(listItem);
+        }
+
+        form.addEventListener('submit', (e) => 
+        {
+            e.preventDefault(); 
+            const taskText = input.value.trim();
+            
+            if (taskText) {
+                addTaskToDOM(taskText);
+                input.value = ''; 
+                input.focus();
+            }
+        });
+        list.addEventListener('click', (e) => 
+        {
+            const target = e.target;
+            if (target.classList.contains('delete-btn')) {
+            const listItem = target.closest('li'); 
+        
+            if (listItem) 
+            {
+                let tasks = getTasks();
+                const taskText = listItem.querySelector('.task-text').textContent;
+            
+                tasks = tasks.filter(task => task.text !== taskText);
+                saveTasks(tasks);
+                listItem.remove(); 
+            }
+            }
+        });
+    loadTasks();
+        </script>
         <footer>
         <p><small>
             Défi Éco-conception | Inspiré par le protocole Gemini.
